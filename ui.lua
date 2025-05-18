@@ -1,16 +1,14 @@
--- V1.3
--- By leothesavior aka @pridescruelty
--- https://www.youtube.com/@pridescruelty/
-
+-- UI Script: https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/ui.lua 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 -- Prevent duplicate GUI creation
 local guiName = "LeoToolsGUI"
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 if PlayerGui:FindFirstChild(guiName) then
-    return {} -- Don't load again if already exists
+    return {} -- Don't load again
 end
 
 -- GUI Setup
@@ -122,6 +120,29 @@ local function showSection(frameToShow)
             child.Visible = (child == frameToShow)
         end
     end
+
+    -- Animate content area
+    contentArea.Position = UDim2.new(1, -100, 0, 40)
+    contentArea.BackgroundTransparency = 1
+    TweenService:Create(contentArea, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0, 100, 0, 40),
+        BackgroundTransparency = 0
+    }):Play()
+
+    -- Highlight selected tab
+    for _, btn in pairs({mainSectionBtn, visualsSectionBtn, settingsSectionBtn}) do
+        if btn then
+            btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        end
+    end
+
+    if frameToShow == mainSection then
+        TweenService:Create(mainSectionBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)}):Play()
+    elseif frameToShow == visualsSection then
+        TweenService:Create(visualsSectionBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)}):Play()
+    elseif frameToShow == settingsSection then
+        TweenService:Create(settingsSectionBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)}):Play()
+    end
 end
 
 -- Show Main by default
@@ -131,8 +152,8 @@ showSection(mainSection)
 local autoAttackBtn
 local divineBlessingBtn
 local showDirtyLinensBtn
-local removeInsanityBlurBtn
 local hideInsanityPropsBtn
+local unloadGuiBtn
 
 -- Main Section Buttons
 autoAttackBtn = createButton(mainSection, "Auto Attack", UDim2.new(0, 10, 0, 20))
@@ -140,10 +161,10 @@ divineBlessingBtn = createButton(mainSection, "Divine Blessing", UDim2.new(0, 10
 
 -- Visuals Section Buttons
 showDirtyLinensBtn = createButton(visualsSection, "Show Dirty Linens", UDim2.new(0, 10, 0, 20))
-hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 120))
+hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 70))
 
 -- Settings Section Buttons
-local unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 20))
+unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 20))
 
 -- Sidebar Button Actions
 mainSectionBtn.MouseButton1Click:Connect(function()
@@ -156,6 +177,16 @@ end)
 
 settingsSectionBtn.MouseButton1Click:Connect(function()
     showSection(settingsSection)
+end)
+
+-- GUI Visibility Toggle (Insert key)
+local guiVisible = true
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Insert then
+        guiVisible = not guiVisible
+        mainFrame.Visible = guiVisible
+    end
 end)
 
 -- Return all buttons
