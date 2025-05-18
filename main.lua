@@ -84,6 +84,18 @@ divineBlessingBtn.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Destroy insanity props
+local function destroyInsanityProps()
+    local insanityFolder = Workspace:FindFirstChild("Essentials") and Workspace.Essentials:FindFirstChild("Insanity")
+    if not insanityFolder then return end
+
+    for _, obj in ipairs(insanityFolder:GetDescendants()) do
+        if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Decal") or obj:IsA("ImageLabel") or obj:IsA("TextLabel") then
+            obj:Destroy()
+        end
+    end
+end
+
 
 -- Door Attack Button
 doorAttackBtn.MouseButton1Click:Connect(function()
@@ -130,18 +142,6 @@ unloadGuiBtn.MouseButton1Click:Connect(function()
         gui:Destroy()
     end
 end)
-
--- Destroy insanity props
-local function destroyInsanityProps()
-    local insanityFolder = Workspace:FindFirstChild("Essentials") and Workspace.Essentials:FindFirstChild("Insanity")
-    if not insanityFolder then return end
-
-    for _, obj in ipairs(insanityFolder:GetDescendants()) do
-        if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Decal") or obj:IsA("ImageLabel") or obj:IsA("TextLabel") then
-            obj:Destroy()
-        end
-    end
-end
 
 -- Character Respawn Handler
 LocalPlayer.CharacterAdded:Connect(function(char)
