@@ -1,20 +1,13 @@
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
+
+-- Prevent duplicate GUI creation
+local guiName = "LeoToolsGUI"
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-
--- Random ScreenGui name
-local function generateRandomName(length)
-    local charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    local name = ""
-    for i = 1, length do
-        local rand = math.random(1, #charset)
-        name = name .. charset:sub(rand, rand)
-    end
-    return name
+if PlayerGui:FindFirstChild(guiName) then
+    return {} -- Don't load again if already exists
 end
-
-local guiName = generateRandomName(16)
 
 -- GUI Setup
 local screenGui = Instance.new("ScreenGui")
@@ -95,8 +88,8 @@ local function createButton(parent, name, position)
 end
 
 -- Sidebar Buttons
-local mainSectionBtn = createButton(sidebar, "Main", UDim2.new(0, 5, 0, 10))
-local visualsSectionBtn = createButton(sidebar, "Visuals", UDim2.new(0, 5, 0, 60))
+createButton(sidebar, "Main", UDim2.new(0, 5, 0, 10))
+createButton(sidebar, "Visuals", UDim2.new(0, 5, 0, 60))
 
 -- Create Sections Inside Content Area
 local mainSection = Instance.new("Frame")
@@ -123,24 +116,32 @@ end
 -- Show Main by default
 showSection(mainSection)
 
+-- Declare buttons locally so we can return them
+local autoAttackBtn
+local divineBlessingBtn
+local showDirtyLinensBtn
+local removeInsanityBlurBtn
+local hideInsanityPropsBtn
+
 -- Main Section Buttons
-createButton(mainSection, "Auto Attack", UDim2.new(0, 10, 0, 20))
-createButton(mainSection, "Divine Blessing", UDim2.new(0, 10, 0, 70))
+autoAttackBtn = createButton(mainSection, "Auto Attack", UDim2.new(0, 10, 0, 20))
+divineBlessingBtn = createButton(mainSection, "Divine Blessing", UDim2.new(0, 10, 0, 70))
 
 -- Visuals Section Buttons
-createButton(visualsSection, "Show Dirty Linens", UDim2.new(0, 10, 0, 20))
-createButton(visualsSection, "Remove Insanity Blur", UDim2.new(0, 10, 0, 70))
-createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 120))
+showDirtyLinensBtn = createButton(visualsSection, "Show Dirty Linens", UDim2.new(0, 10, 0, 20))
+removeInsanityBlurBtn = createButton(visualsSection, "Remove Insanity Blur", UDim2.new(0, 10, 0, 70))
+hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 120))
 
 -- Sidebar Button Actions
-mainSectionBtn.MouseButton1Click:Connect(function()
+sidebar:FindFirstChild("TextButton", true).MouseButton1Click:Connect(function()
     showSection(mainSection)
 end)
 
-visualsSectionBtn.MouseButton1Click:Connect(function()
+sidebar:FindFirstChild("TextButton", true).NextSelectionRight.MouseButton1Click:Connect(function()
     showSection(visualsSection)
 end)
 
+-- Return all buttons
 return {
     autoAttackBtn = autoAttackBtn,
     divineBlessingBtn = divineBlessingBtn,
