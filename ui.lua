@@ -1,5 +1,5 @@
 -- leo's UI library
--- V1.7.1
+-- V1.7.2
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -132,7 +132,7 @@ local function updateStatusText()
     local insanityValue = character:GetAttribute("Insanity") or "Blur value not found, check F9"
     local currentTime = game.Lighting.TimeOfDay -- Get current time in HH:MM:SS format
 
-    statusText.Text = string.format("Time: %s | Blurs: %.2f", currentTime, insanityValue)
+    statusText.Text = string.format("Time: " .. currentTime .. " | Blurs: " .. insanityValue)
 end
 
 -- Clear content area and show selected section
