@@ -194,15 +194,18 @@ task.spawn(function()
             for _, door in ipairs(doorsFolder:GetChildren()) do
                 local canBreak = door:GetAttribute("canBreak")
                 local currentHealth = door:GetAttribute("currentHealth")
-                local hrpPos = HumanoidRootPart.Position
-                local doorPos = door.Position
 
                 -- Handle Model position via PrimaryPart
+                local hrpPos = HumanoidRootPart.Position
+                local doorPos = nil
+
                 if door:IsA("Model") and door.PrimaryPart then
                     local primaryPart = door:FindFirstChild(door.PrimaryPart.Name)
                     if primaryPart then
                         doorPos = primaryPart.Position
                     end
+                elseif door:IsA("BasePart") then
+                    doorPos = door.Position
                 end
 
                 -- Validate and collect valid targets
