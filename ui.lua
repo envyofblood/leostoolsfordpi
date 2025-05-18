@@ -1,3 +1,7 @@
+-- V1.3
+-- By leothesavior aka @pridescruelty
+-- https://www.youtube.com/@pridescruelty/
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
@@ -164,4 +168,3 @@ return {
     hideInsanityPropsBtn = hideInsanityPropsBtn,
     unloadGuiBtn = unloadGuiBtn
 }
--- v1.1
