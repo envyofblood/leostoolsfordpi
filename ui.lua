@@ -88,8 +88,8 @@ local function createButton(parent, name, position)
 end
 
 -- Sidebar Buttons
-createButton(sidebar, "Main", UDim2.new(0, 5, 0, 10))
-createButton(sidebar, "Visuals", UDim2.new(0, 5, 0, 60))
+local mainSectionBtn = createButton(sidebar, "Main", UDim2.new(0, 5, 0, 10))
+local visualsSectionBtn = createButton(sidebar, "Visuals", UDim2.new(0, 5, 0, 60))
 
 -- Create Sections Inside Content Area
 local mainSection = Instance.new("Frame")
@@ -133,11 +133,11 @@ removeInsanityBlurBtn = createButton(visualsSection, "Remove Insanity Blur", UDi
 hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 120))
 
 -- Sidebar Button Actions
-sidebar:FindFirstChild("TextButton", true).MouseButton1Click:Connect(function()
+mainSectionBtn.MouseButton1Click:Connect(function()
     showSection(mainSection)
 end)
 
-sidebar:FindFirstChild("TextButton", true).NextSelectionRight.MouseButton1Click:Connect(function()
+visualsSectionBtn.MouseButton1Click:Connect(function()
     showSection(visualsSection)
 end)
 
