@@ -24,6 +24,7 @@ local divineBlessingBtn = uiModule.divineBlessingBtn
 local showDirtyLinensBtn = uiModule.showDirtyLinensBtn
 local hideInsanityPropsBtn = uiModule.hideInsanityPropsBtn
 local unloadGuiBtn = uiModule.unloadGuiBtn
+local doorAttackBtn = uiModule.doorAttackBtn
 
 -- Services
 local Players = game:GetService("Players")
@@ -43,6 +44,8 @@ local isAutoAttackEnabled = false
 local isAttributeLoopEnabled = false
 local isESPEnabled = false
 local isHideInsanityPropsEnabled = false
+local isDoorAttackEnabled = false
+local attackRange = 15 -- Adjust range as needed
 
 local attributesList = {"Hunger", "Hygiene", "Stamina", "MaxStamina", "MaxHunger"}
 
@@ -78,6 +81,13 @@ divineBlessingBtn.MouseButton1Click:Connect(function()
             character:SetAttribute(attr, 100)
         end
     end
+end)
+
+
+-- Door Attack Button
+doorAttackBtn.MouseButton1Click:Connect(function()
+    isDoorAttackEnabled = not isDoorAttackEnabled
+    setButtonText(doorAttackBtn, isDoorAttackEnabled)
 end)
 
 -- Show Dirty Linens Button
@@ -172,6 +182,40 @@ task.spawn(function()
             end
         end
         task.wait(0.7)
+    end
+end)
+
+-- DOOR ATTACK LOOP
+task.spawn(function()
+    while true do
+        if isDoorAttackEnabled then
+            local targets = {}
+            for _, door in ipairs(doorsFolder:GetChildren()) do
+                local canBreak = door:GetAttribute("canBreak")
+                local currentHealth = door:GetAttribute("currentHealth")
+                local hrpPos = HumanoidRootPart.Position
+                local doorPos = door.Position
+
+                if door:IsA("Model") and door.PrimaryPart then
+                    local primaryPart = door:FindFirstChild(door.PrimaryPart.Name)
+                    if primaryPart then
+                        doorPos = primaryPart.Position
+                    end
+                end
+
+                if canBreak == true and currentHealth and currentHealth > 0 and doorPos then
+                    if (hrpPos - doorPos).Magnitude <= attackRange then
+                        table.insert(targets, door)
+                    end
+                end
+            end
+
+            if #targets > 0 then
+                attackEvent:FireServer("AttackPlayers", targets)
+            end
+        end
+
+        task.wait(isDoorAttackEnabled and 0.2 or 0.1)
     end
 end)
 
