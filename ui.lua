@@ -1,4 +1,6 @@
--- UI Script: https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/ui.lua 
+-- leo's UI library
+-- V1.7
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -101,6 +103,16 @@ mainSection.Position = UDim2.new(0, 0, 0, 0)
 mainSection.BackgroundTransparency = 1
 mainSection.Parent = contentArea
 
+local statusText = Instance.new("TextLabel")
+statusText.Size = UDim2.new(1, -20, 0, 30)
+statusText.Position = UDim2.new(0, 10, 0, 250) -- Adjust position as needed
+statusText.BackgroundTransparency = 1
+statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusText.Font = Enum.Font.Gotham
+statusText.TextSize = 14
+statusText.Text = "Time: Loading... | Blurs: Loading..."
+statusText.Parent = mainSection
+
 local visualsSection = Instance.new("Frame")
 visualsSection.Size = UDim2.new(1, 0, 1, 0)
 visualsSection.Position = UDim2.new(0, 0, 0, 0)
@@ -112,6 +124,16 @@ settingsSection.Size = UDim2.new(1, 0, 1, 0)
 settingsSection.Position = UDim2.new(0, 0, 0, 0)
 settingsSection.BackgroundTransparency = 1
 settingsSection.Parent = contentArea
+
+-- Function to update the status text
+local function updateStatusText()
+    local LocalPlayer = Players.LocalPlayer
+    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local insanityValue = character:GetAttribute("Insanity") or 0
+    local currentTime = game.Lightning.TimeOfDay -- Get current time in HH:MM:SS format
+
+    statusText.Text = string.format("Time: %s | Blurs: %.2f", currentTime, insanityValue)
+end
 
 -- Clear content area and show selected section
 local function showSection(frameToShow)
@@ -186,9 +208,16 @@ end)
 local guiVisible = true
 
 UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.Insert then
+    if input.KeyCode == Enum.KeyCode.G then
         guiVisible = not guiVisible
         mainFrame.Visible = guiVisible
+    end
+end)
+
+task.spawn(function()
+    while true do
+        updateStatusText()
+        task.wait(1)
     end
 end)
 
