@@ -105,7 +105,7 @@ mainSection.Parent = contentArea
 
 local statusText = Instance.new("TextLabel")
 statusText.Size = UDim2.new(1, -20, 0, 30)
-statusText.Position = UDim2.new(0, 10, 0, 250) -- Adjust position as needed
+statusText.Position = UDim2.new(0, 10, 0, 220) -- moved 30px up
 statusText.BackgroundTransparency = 1
 statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
 statusText.Font = Enum.Font.Gotham
@@ -130,7 +130,7 @@ local function updateStatusText()
     local LocalPlayer = Players.LocalPlayer
     local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
     local insanityValue = character:GetAttribute("Insanity") or 0
-    local currentTime = game.Lightning.TimeOfDay -- Get current time in HH:MM:SS format
+    local currentTime = game.Lighting.TimeOfDay -- Get current time in HH:MM:SS format
 
     statusText.Text = string.format("Time: %s | Blurs: %.2f", currentTime, insanityValue)
 end
