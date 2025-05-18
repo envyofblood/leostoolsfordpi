@@ -159,6 +159,9 @@ local unloadGuiBtn
 autoAttackBtn = createButton(mainSection, "Auto Attack", UDim2.new(0, 10, 0, 20))
 divineBlessingBtn = createButton(mainSection, "Divine Blessing", UDim2.new(0, 10, 0, 70))
 
+-- Door Attack Button
+doorAttackBtn = createButton(mainSection, "Door Attack (K)", UDim2.new(0, 10, 0, 120))
+
 -- Visuals Section Buttons
 showDirtyLinensBtn = createButton(visualsSection, "Show Dirty Linens", UDim2.new(0, 10, 0, 20))
 hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 70))
