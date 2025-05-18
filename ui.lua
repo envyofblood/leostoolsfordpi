@@ -1,5 +1,5 @@
 -- leo's UI library
--- V1.7.2
+-- V1.7.3
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -105,7 +105,7 @@ mainSection.Parent = contentArea
 
 local statusText = Instance.new("TextLabel")
 statusText.Size = UDim2.new(1, -20, 0, 30)
-statusText.Position = UDim2.new(0, 10, 0, 220) -- moved 30px up
+statusText.Position = UDim2.new(0, 10, 0, 200) -- moved 30px up
 statusText.BackgroundTransparency = 1
 statusText.TextColor3 = Color3.fromRGB(255, 255, 255)
 statusText.Font = Enum.Font.Gotham
