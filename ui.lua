@@ -129,7 +129,7 @@ settingsSection.Parent = contentArea
 local function updateStatusText()
     local LocalPlayer = Players.LocalPlayer
     local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local insanityValue = character:GetAttribute("Insanity") or 0
+    local insanityValue = character:GetAttribute("Insanity") or "Blur value not found, check F9"
     local currentTime = game.Lighting.TimeOfDay -- Get current time in HH:MM:SS format
 
     statusText.Text = string.format("Time: %s | Blurs: %.2f", currentTime, insanityValue)
