@@ -90,6 +90,7 @@ end
 -- Sidebar Buttons
 local mainSectionBtn = createButton(sidebar, "Main", UDim2.new(0, 5, 0, 10))
 local visualsSectionBtn = createButton(sidebar, "Visuals", UDim2.new(0, 5, 0, 60))
+local settingsSectionBtn = createButton(sidebar, "Settings", UDim2.new(0, 5, 0, 110))
 
 -- Create Sections Inside Content Area
 local mainSection = Instance.new("Frame")
@@ -103,6 +104,12 @@ visualsSection.Size = UDim2.new(1, 0, 1, 0)
 visualsSection.Position = UDim2.new(0, 0, 0, 0)
 visualsSection.BackgroundTransparency = 1
 visualsSection.Parent = contentArea
+
+local settingsSection = Instance.new("Frame")
+settingsSection.Size = UDim2.new(1, 0, 1, 0)
+settingsSection.Position = UDim2.new(0, 0, 0, 0)
+settingsSection.BackgroundTransparency = 1
+settingsSection.Parent = contentArea
 
 -- Clear content area and show selected section
 local function showSection(frameToShow)
@@ -132,6 +139,9 @@ showDirtyLinensBtn = createButton(visualsSection, "Show Dirty Linens", UDim2.new
 removeInsanityBlurBtn = createButton(visualsSection, "Remove Insanity Blur", UDim2.new(0, 10, 0, 70))
 hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 120))
 
+-- Settings Section Buttons
+local unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 20))
+
 -- Sidebar Button Actions
 mainSectionBtn.MouseButton1Click:Connect(function()
     showSection(mainSection)
@@ -141,12 +151,17 @@ visualsSectionBtn.MouseButton1Click:Connect(function()
     showSection(visualsSection)
 end)
 
+settingsSectionBtn.MouseButton1Click:Connect(function()
+    showSection(settingsSection)
+end)
+
 -- Return all buttons
 return {
     autoAttackBtn = autoAttackBtn,
     divineBlessingBtn = divineBlessingBtn,
     showDirtyLinensBtn = showDirtyLinensBtn,
     removeInsanityBlurBtn = removeInsanityBlurBtn,
-    hideInsanityPropsBtn = hideInsanityPropsBtn
+    hideInsanityPropsBtn = hideInsanityPropsBtn,
+    unloadGuiBtn = unloadGuiBtn
 }
 -- v1.1
