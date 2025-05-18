@@ -149,3 +149,4 @@ return {
     removeInsanityBlurBtn = removeInsanityBlurBtn,
     hideInsanityPropsBtn = hideInsanityPropsBtn
 }
+-- v1.1
