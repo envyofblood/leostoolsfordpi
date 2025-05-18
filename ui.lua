@@ -1,5 +1,5 @@
 -- leo's UI library
--- V1.7.3
+-- V1.7.4
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
