@@ -140,3 +140,11 @@ end)
 visualsSectionBtn.MouseButton1Click:Connect(function()
     showSection(visualsSection)
 end)
+
+return {
+    autoAttackBtn = autoAttackBtn,
+    divineBlessingBtn = divineBlessingBtn,
+    showDirtyLinensBtn = showDirtyLinensBtn,
+    removeInsanityBlurBtn = removeInsanityBlurBtn,
+    hideInsanityPropsBtn = hideInsanityPropsBtn
+}
