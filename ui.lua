@@ -22,11 +22,11 @@ screenGui.Name = guiName
 screenGui.ResetOnSpawn = false
 screenGui.Parent = PlayerGui
 
--- Main Frame
+-- Main Container
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 240, 0, 260)
+mainFrame.Size = UDim2.new(0, 400, 0, 300)
 mainFrame.Position = UDim2.new(0, 50, 0, 50)
-mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Draggable = true
@@ -42,6 +42,22 @@ title.Font = Enum.Font.GothamBold
 title.TextSize = 18
 title.Parent = mainFrame
 
+-- Sidebar
+local sidebar = Instance.new("Frame")
+sidebar.Size = UDim2.new(0, 100, 1, -60)
+sidebar.Position = UDim2.new(0, 0, 0, 40)
+sidebar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+sidebar.BorderSizePixel = 0
+sidebar.Parent = mainFrame
+
+-- Content Area
+local contentArea = Instance.new("Frame")
+contentArea.Size = UDim2.new(1, -100, 1, -60)
+contentArea.Position = UDim2.new(0, 100, 0, 40)
+contentArea.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+contentArea.BorderSizePixel = 0
+contentArea.Parent = mainFrame
+
 -- Subtitle - Credits
 local credits = Instance.new("TextLabel")
 credits.Size = UDim2.new(1, 0, 0, 20)
@@ -56,9 +72,9 @@ credits.Parent = mainFrame
 -- Button Template Function with Animation
 local function createButton(parent, name, position)
     local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, -20, 0, 35)
+    button.Size = UDim2.new(1, -10, 0, 35)
     button.Position = position
-    button.Text = name .. ": OFF"
+    button.Text = name
     button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Font = Enum.Font.Gotham
@@ -78,31 +94,49 @@ local function createButton(parent, name, position)
     return button
 end
 
+-- Sidebar Buttons
+local mainSectionBtn = createButton(sidebar, "Main", UDim2.new(0, 5, 0, 10))
+local visualsSectionBtn = createButton(sidebar, "Visuals", UDim2.new(0, 5, 0, 60))
+
+-- Create Sections Inside Content Area
+local mainSection = Instance.new("Frame")
+mainSection.Size = UDim2.new(1, 0, 1, 0)
+mainSection.Position = UDim2.new(0, 0, 0, 0)
+mainSection.BackgroundTransparency = 1
+mainSection.Parent = contentArea
+
+local visualsSection = Instance.new("Frame")
+visualsSection.Size = UDim2.new(1, 0, 1, 0)
+visualsSection.Position = UDim2.new(0, 0, 0, 0)
+visualsSection.BackgroundTransparency = 1
+visualsSection.Parent = contentArea
+
+-- Clear content area and show selected section
+local function showSection(frameToShow)
+    for _, child in ipairs(contentArea:GetChildren()) do
+        if child:IsA("Frame") then
+            child.Visible = (child == frameToShow)
+        end
+    end
+end
+
+-- Show Main by default
+showSection(mainSection)
+
 -- Main Section Buttons
-local autoAttackBtn = createButton(mainFrame, "Auto Attack", UDim2.new(0, 10, 0, 50))
-local divineBlessingBtn = createButton(mainFrame, "Divine Blessing", UDim2.new(0, 10, 0, 95))
-
--- Visuals Frame
-local visualsFrame = Instance.new("Frame")
-visualsFrame.Size = UDim2.new(0, 240, 0, 200)
-visualsFrame.Position = UDim2.new(0, 50, 0, 320)
-visualsFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-visualsFrame.BorderSizePixel = 0
-visualsFrame.Active = true
-visualsFrame.Draggable = true
-visualsFrame.Parent = screenGui
-
--- Visuals Title
-local visualsTitle = Instance.new("TextLabel")
-visualsTitle.Size = UDim2.new(1, 0, 0, 40)
-visualsTitle.BackgroundTransparency = 1
-visualsTitle.Text = "VISUALS"
-visualsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-visualsTitle.Font = Enum.Font.GothamBold
-visualsTitle.TextSize = 18
-visualsTitle.Parent = visualsFrame
+createButton(mainSection, "Auto Attack", UDim2.new(0, 10, 0, 20))
+createButton(mainSection, "Divine Blessing", UDim2.new(0, 10, 0, 70))
 
 -- Visuals Section Buttons
-local showDirtyLinensBtn = createButton(visualsFrame, "Show Dirty Linens", UDim2.new(0, 10, 0, 50))
-local removeInsanityBlurBtn = createButton(visualsFrame, "Remove Insanity Blur", UDim2.new(0, 10, 0, 90))
-local hideInsanityPropsBtn = createButton(visualsFrame, "Hide Insanity Props", UDim2.new(0, 10, 0, 130))
+createButton(visualsSection, "Show Dirty Linens", UDim2.new(0, 10, 0, 20))
+createButton(visualsSection, "Remove Insanity Blur", UDim2.new(0, 10, 0, 70))
+createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 120))
+
+-- Sidebar Button Actions
+mainSectionBtn.MouseButton1Click:Connect(function()
+    showSection(mainSection)
+end)
+
+visualsSectionBtn.MouseButton1Click:Connect(function()
+    showSection(visualsSection)
+end)
