@@ -1,4 +1,4 @@
--- V1.5
+-- V1.6
 -- By leothesavior aka @pridescruelty
 -- https://www.youtube.com/@pridescruelty/
 
