@@ -140,7 +140,6 @@ divineBlessingBtn = createButton(mainSection, "Divine Blessing", UDim2.new(0, 10
 
 -- Visuals Section Buttons
 showDirtyLinensBtn = createButton(visualsSection, "Show Dirty Linens", UDim2.new(0, 10, 0, 20))
-removeInsanityBlurBtn = createButton(visualsSection, "Remove Insanity Blur", UDim2.new(0, 10, 0, 70))
 hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 120))
 
 -- Settings Section Buttons
@@ -164,7 +163,6 @@ return {
     autoAttackBtn = autoAttackBtn,
     divineBlessingBtn = divineBlessingBtn,
     showDirtyLinensBtn = showDirtyLinensBtn,
-    removeInsanityBlurBtn = removeInsanityBlurBtn,
     hideInsanityPropsBtn = hideInsanityPropsBtn,
     unloadGuiBtn = unloadGuiBtn
 }
