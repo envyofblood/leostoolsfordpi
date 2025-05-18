@@ -1,0 +1,228 @@
+-- V1.5
+-- By leothesavior aka @pridescruelty
+-- https://www.youtube.com/@pridescruelty/
+
+local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/ui.lua"
+local uiModule = nil
+local guiName = "LeoToolsGUI"
+
+repeat
+    task.wait()
+    local success, result = pcall(function()
+        return loadstring(game:HttpGetAsync(uiUrl), "UI_SCRIPT")()
+    end)
+    if success then
+        uiModule = result
+    else
+        warn("Failed to load UI:", result)
+    end
+until uiModule and uiModule.autoAttackBtn
+
+-- Extract buttons from UI module
+local autoAttackBtn = uiModule.autoAttackBtn
+local divineBlessingBtn = uiModule.divineBlessingBtn
+local showDirtyLinensBtn = uiModule.showDirtyLinensBtn
+local hideInsanityPropsBtn = uiModule.hideInsanityPropsBtn
+local unloadGuiBtn = uiModule.unloadGuiBtn
+
+-- Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Variables
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart") or Character:WaitForChild("HumanoidRootPart")
+
+local attackEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("30")
+
+local isAutoAttackEnabled = false
+local isAttributeLoopEnabled = false
+local isESPEnabled = false
+local isHideInsanityPropsEnabled = false
+
+local attributesList = {"Hunger", "Hygiene", "Stamina", "MaxStamina", "MaxHunger"}
+
+-- Nearby check
+local function isNear(otherChar, range)
+    local otherHRP = otherChar:FindFirstChild("HumanoidRootPart")
+    if otherHRP then
+        local distance = (HumanoidRootPart.Position - otherHRP.Position).Magnitude
+        return distance <= range
+    end
+    return false
+end
+
+-- Button State Management
+function setButtonText(button, state)
+    button.Text = button.Text:match(".*: ") and button.Text:gsub(": .*", ": " .. (state and "ON" or "OFF")) or button.Text .. ": " .. (state and "ON" or "OFF")
+end
+
+-- Auto Attack Button
+autoAttackBtn.MouseButton1Click:Connect(function()
+    isAutoAttackEnabled = not isAutoAttackEnabled
+    setButtonText(autoAttackBtn, isAutoAttackEnabled)
+end)
+
+-- Divine Blessing Button
+divineBlessingBtn.MouseButton1Click:Connect(function()
+    isAttributeLoopEnabled = not isAttributeLoopEnabled
+    setButtonText(divineBlessingBtn, isAttributeLoopEnabled)
+
+    if not isAttributeLoopEnabled then
+        local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        for _, attr in pairs(attributesList) do
+            character:SetAttribute(attr, 100)
+        end
+    end
+end)
+
+-- Show Dirty Linens Button
+showDirtyLinensBtn.MouseButton1Click:Connect(function()
+    isESPEnabled = not isESPEnabled
+    setButtonText(showDirtyLinensBtn, isESPEnabled)
+end)
+
+-- Hide Insanity Props Button
+hideInsanityPropsBtn.MouseButton1Click:Connect(function()
+    isHideInsanityPropsEnabled = not isHideInsanityPropsEnabled
+    setButtonText(hideInsanityPropsBtn, isHideInsanityPropsEnabled)
+
+    if isHideInsanityPropsEnabled then
+        spawn(destroyInsanityProps)
+        hideInsanityPropsBtn.Text = "Done! Destroying this button now."
+        wait(1)
+        hideInsanityPropsBtn:Destroy()
+    end
+end)
+
+-- Unload GUI Button
+unloadGuiBtn.MouseButton1Click:Connect(function()
+    -- Turn off all features
+    isAutoAttackEnabled = false
+    isAttributeLoopEnabled = false
+    isESPEnabled = false
+    isHideInsanityPropsEnabled = false
+
+    -- Reset button texts
+    setButtonText(autoAttackBtn, false)
+    setButtonText(divineBlessingBtn, false)
+    setButtonText(showDirtyLinensBtn, false)
+    setButtonText(hideInsanityPropsBtn, false)
+
+    -- Destroy GUI
+    local gui = PlayerGui:FindFirstChild(guiName)
+    if gui then
+        gui:Destroy()
+    end
+end)
+
+-- Destroy insanity props
+local function destroyInsanityProps()
+    local insanityFolder = Workspace:FindFirstChild("Essentials") and Workspace.Essentials:FindFirstChild("Insanity")
+    if not insanityFolder then return end
+
+    for _, obj in ipairs(insanityFolder:GetDescendants()) do
+        if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Decal") or obj:IsA("ImageLabel") or obj:IsA("TextLabel") then
+            obj:Destroy()
+        end
+    end
+end
+
+-- Character Respawn Handler
+LocalPlayer.CharacterAdded:Connect(function(char)
+    Character = char
+    HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+end)
+
+-- Auto Attack Loop
+task.spawn(function()
+    while true do
+        if isAutoAttackEnabled then
+            local targets = {}
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    local character = player.Character
+                    if character and isNear(character, 5) then
+                        table.insert(targets, character)
+                    end
+                end
+            end
+            if #targets > 0 then
+                attackEvent:FireServer("AttackPlayers", targets)
+            end
+        end
+        task.wait(0.5)
+    end
+end)
+
+-- Attribute Refill Loop
+task.spawn(function()
+    while true do
+        if isAttributeLoopEnabled then
+            local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+            for _, attr in pairs(attributesList) do
+                if character:GetAttribute(attr) == nil then
+                    character:SetAttribute(attr, 9999999)
+                end
+                character:SetAttribute(attr, 9999999)
+            end
+        end
+        task.wait(0.7)
+    end
+end)
+
+-- ESP Folder
+local linenESPFolder = Instance.new("Folder")
+linenESPFolder.Name = "LinenESP"
+linenESPFolder.Parent = PlayerGui
+
+-- ESP Loop
+task.spawn(function()
+    while true do
+        if isESPEnabled then
+            for _, gui in ipairs(linenESPFolder:GetChildren()) do
+                gui:Destroy()
+            end
+
+            local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                local beds = Workspace:WaitForChild("Essentials", 10):WaitForChild("Interactables", 10):WaitForChild("BedFolder", 10):GetChildren()
+                for _, bed in ipairs(beds) do
+                    if bed:IsA("Model") and not bed:GetAttribute("NoLinen") and (bed:GetAttribute("Dirtiness") or 0) >= 2 then
+                        local bedPart = bed.PrimaryPart or bed:FindFirstChildWhichIsA("BasePart")
+                        if bedPart then
+                            local distance = (bedPart.Position - root.Position).Magnitude
+
+                            local adorn = Instance.new("BillboardGui")
+                            adorn.Name = "ESP_" .. bed.Name
+                            adorn.AlwaysOnTop = true
+                            adorn.Size = UDim2.new(0, 200, 0, 50)
+                            adorn.Adornee = bedPart
+                            adorn.Parent = linenESPFolder
+
+                            local textLabel = Instance.new("TextLabel")
+                            textLabel.Size = UDim2.new(1, 0, 1, 0)
+                            textLabel.BackgroundTransparency = 1
+                            textLabel.TextColor3 = Color3.new(1, 1, 1)
+                            textLabel.TextStrokeTransparency = 0.5
+                            textLabel.TextSize = 16
+                            textLabel.Font = Enum.Font.GothamBold
+                            textLabel.Text = "Dirty Linen\n" .. math.floor(distance) .. " studs"
+                            textLabel.Parent = adorn
+                        end
+                    end
+                end
+            end
+        else
+            for _, gui in ipairs(linenESPFolder:GetChildren()) do
+                gui:Destroy()
+            end
+        end
+
+        task.wait(1)
+    end
+end)
