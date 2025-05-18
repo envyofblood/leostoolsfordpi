@@ -39,6 +39,7 @@ local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart") or Character:WaitForChild("HumanoidRootPart")
 
 local attackEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("30")
+local doorsFolder = workspace:WaitForChild("Essentials", 9e9):WaitForChild("Interactables", 9e9):WaitForChild("Doors", 9e9)
 
 local isAutoAttackEnabled = false
 local isAttributeLoopEnabled = false
