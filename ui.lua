@@ -1,11 +1,15 @@
 -- leo's UI library
--- V1.7.4
+-- V1.7.5
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Keybind Variables
+local currentKeybind = Enum.KeyCode.G -- Default key
+local keybindText = "G" -- Displayed key name
 
 -- Prevent duplicate GUI creation
 local guiName = "LeoToolsGUI"
@@ -191,6 +195,19 @@ hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2
 -- Settings Section Buttons
 unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 20))
 
+-- Add Keybind Input
+local keybindInput = Instance.new("TextBox")
+keybindInput.Size = UDim2.new(1, -20, 0, 35)
+keybindInput.Position = UDim2.new(0, 10, 0, 50)
+keybindInput.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+keybindInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+keybindInput.Font = Enum.Font.Gotham
+keybindInput.TextSize = 14
+keybindInput.Text = "Change Keybind (Current: " .. keybindText .. ")"
+keybindInput.Parent = settingsSection
+
+local confirmKeybindBtn = createButton(settingsSection, "Confirm Keybind", UDim2.new(0, 10, 0, 90))
+
 -- Sidebar Button Actions
 mainSectionBtn.MouseButton1Click:Connect(function()
     showSection(mainSection)
@@ -204,11 +221,27 @@ settingsSectionBtn.MouseButton1Click:Connect(function()
     showSection(settingsSection)
 end)
 
--- GUI Visibility Toggle (Insert key)
+-- Confirm Keybind Button Logic
+confirmKeybindBtn.MouseButton1Click:Connect(function()
+    local userInput = string.upper(keybindInput.Text) -- Get user input and normalize to uppercase
+    local newKey = Enum.KeyCode[userInput] -- Check if the input corresponds to a valid KeyCode
+
+    if newKey then
+        currentKeybind = newKey -- Update the keybind
+        keybindText = userInput -- Update the displayed key name
+        keybindInput.Text = "Change Keybind (Current: " .. keybindText .. ")"
+        keybindInput.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Reset color
+    else
+        keybindInput.Text = "Invalid Key! Try again."
+        keybindInput.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Highlight invalid input
+    end
+end)
+
+-- GUI Visibility Toggle
 local guiVisible = true
 
 UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.G then
+    if input.KeyCode == currentKeybind then
         guiVisible = not guiVisible
         mainFrame.Visible = guiVisible
     end
