@@ -39,7 +39,7 @@ local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart") or Character:WaitForChild("HumanoidRootPart")
 
 local attackEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("30")
-local doorsFolder = workspace:WaitForChild("Essentials", 9e9):WaitForChild("Interactables", 9e9):WaitForChild("Doors", 9e9)
+local doorsFolder = workspace:WaitForChild("Essentials"):WaitForChild("Interactables"):WaitForChild("Doors")
 
 local isAutoAttackEnabled = false
 local isAttributeLoopEnabled = false
@@ -197,6 +197,7 @@ task.spawn(function()
                 local hrpPos = HumanoidRootPart.Position
                 local doorPos = door.Position
 
+                -- Handle Model position via PrimaryPart
                 if door:IsA("Model") and door.PrimaryPart then
                     local primaryPart = door:FindFirstChild(door.PrimaryPart.Name)
                     if primaryPart then
@@ -204,6 +205,7 @@ task.spawn(function()
                     end
                 end
 
+                -- Validate and collect valid targets
                 if canBreak == true and currentHealth and currentHealth > 0 and doorPos then
                     if (hrpPos - doorPos).Magnitude <= attackRange then
                         table.insert(targets, door)
