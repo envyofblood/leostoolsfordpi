@@ -198,5 +198,6 @@ return {
     divineBlessingBtn = divineBlessingBtn,
     showDirtyLinensBtn = showDirtyLinensBtn,
     hideInsanityPropsBtn = hideInsanityPropsBtn,
-    unloadGuiBtn = unloadGuiBtn
+    unloadGuiBtn = unloadGuiBtn,
+    doorAttackBtn = doorAttackBtn -- Add this line
 }
