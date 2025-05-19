@@ -1,6 +1,5 @@
 -- leo's UI library
--- V2.0.3
-
+-- V2.0.1
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -136,7 +135,6 @@ local function createButton(parent, name, position)
     buttonContainer.Position = position
     buttonContainer.BackgroundTransparency = 1
     buttonContainer.Parent = parent
-    
     local button = Instance.new("TextButton")
     button.Size = UDim2.new(1, 0, 1, 0)
     button.Text = name
@@ -147,29 +145,23 @@ local function createButton(parent, name, position)
     button.BorderSizePixel = 0
     button.Parent = buttonContainer
     addCorners(button, 8)
-    
     local buttonGlow = addGlow(button, COLORS.accent, 15)
     buttonGlow.ImageTransparency = 1 -- Start invisible
-    
     -- Hover effect
     button.MouseEnter:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {BackgroundColor3 = COLORS.buttonHover}):Play()
         TweenService:Create(buttonGlow, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {ImageTransparency = 0.7}):Play()
     end)
-
     button.MouseLeave:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {BackgroundColor3 = COLORS.button}):Play()
         TweenService:Create(buttonGlow, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {ImageTransparency = 1}):Play()
     end)
-    
     button.MouseButton1Down:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {BackgroundColor3 = COLORS.buttonActive, Size = UDim2.new(0.98, 0, 0.95, 0), Position = UDim2.new(0.01, 0, 0.025, 0)}):Play()
     end)
-    
     button.MouseButton1Up:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {BackgroundColor3 = COLORS.buttonHover, Size = UDim2.new(1, 0, 1, 0), Position = UDim2.new(0, 0, 0, 0)}):Play()
     end)
-
     return button
 end
 
@@ -225,7 +217,6 @@ statusPanel.BackgroundTransparency = 0.5
 statusPanel.Parent = mainSection
 addCorners(statusPanel, 8)
 addStroke(statusPanel, COLORS.accent, 1)
-
 local statusText = Instance.new("TextLabel")
 statusText.Size = UDim2.new(1, 0, 1, 0)
 statusText.BackgroundTransparency = 1
@@ -259,7 +250,6 @@ local function updateStatusText()
     local character = game.Players.LocalPlayer
     local insanityValue = character:GetAttribute("Insanity") or "Blur value not found, check F9"
     local currentTime = game.Lighting.TimeOfDay -- Get current time in HH:MM:SS format
-
     statusText.Text = string.format("Time: " .. currentTime .. " | Blurs: " .. insanityValue)
 end
 
@@ -303,12 +293,18 @@ local divineBlessingBtn
 local showDirtyLinensBtn
 local hideInsanityPropsBtn
 local unloadGuiBtn
+local confirmExcludePlayerBtn
+local excludePurpleTeamBtn
+local excludeBlueTeamBtn
+local excludeGreenTeamBtn
+local excludePinkTeamBtn
+local excludeStaffBtn
+local discordBtn
+local youtubeBtn
 
 -- Main Section Buttons
 autoAttackBtn = createButton(mainSection, "Auto Attack", UDim2.new(0, 10, 0, 20))
 divineBlessingBtn = createButton(mainSection, "Divine Blessing", UDim2.new(0, 10, 0, 70))
-
--- Door Attack Button
 doorAttackBtn = createButton(mainSection, "Door Attack (Only Big Monster)", UDim2.new(0, 10, 0, 120))
 
 -- Visuals Section Buttons
@@ -318,17 +314,15 @@ hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2
 -- Settings Section Buttons
 unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 20))
 
-local confirmExcludePlayerBtn = createButton(exclusionContainer, "Add Player", UDim2.new(0, 0, 0, 60))
+-- Exclusion Buttons
+confirmExcludePlayerBtn = createButton(exclusionContainer, "Add Player", UDim2.new(0, 0, 0, 60))
+excludePurpleTeamBtn = createButton(exclusionContainer, "Exclude Purple Team", UDim2.new(0, 0, 0, 100))
+excludeBlueTeamBtn = createButton(exclusionContainer, "Exclude Blue Team", UDim2.new(0, 0, 0, 140))
+excludeGreenTeamBtn = createButton(exclusionContainer, "Exclude Green Team", UDim2.new(0, 0, 0, 180))
+excludePinkTeamBtn = createButton(exclusionContainer, "Exclude Pink Team", UDim2.new(0, 0, 0, 220))
+excludeStaffBtn = createButton(exclusionContainer, "Exclude Staff", UDim2.new(0, 0, 0, 260))
 
--- Buttons to exclude teams
-local excludePurpleTeamBtn = createButton(exclusionContainer, "Exclude Purple Team", UDim2.new(0, 0, 0, 100))
-local excludeBlueTeamBtn = createButton(exclusionContainer, "Exclude Blue Team", UDim2.new(0, 0, 0, 140))
-local excludeGreenTeamBtn = createButton(exclusionContainer, "Exclude Green Team", UDim2.new(0, 0, 0, 180))
-local excludePinkTeamBtn = createButton(exclusionContainer, "Exclude Pink Team", UDim2.new(0, 0, 0, 220))
-
--- Button to exclude staff
-local excludeStaffBtn = createButton(exclusionContainer, "Exclude Staff", UDim2.new(0, 0, 0, 260))
-
+-- Credits Buttons
 discordBtn = createButton(creditsSection, "Copy Discord", UDim2.new(0, 10, 0, 20))
 youtubeBtn = createButton(creditsSection, "Copy YouTube", UDim2.new(0, 10, 0, 70))
 
@@ -345,7 +339,7 @@ local function shouldExclude(player)
     if team and excludedTeams[team] then
         return true
     end
-    local trueRank = game.Players:GetAttribute("TrueRank")
+    local trueRank = player:GetAttribute("TrueRank")
     if trueRank and trueRank >= 50 and excludedTeams["Staff"] then
         return true
     end
@@ -356,9 +350,14 @@ end
 confirmExcludePlayerBtn.MouseButton1Click:Connect(function()
     local playerName = excludePlayerInput.Text
     if playerName ~= "" then
-        excludedPlayers[playerName] = true
+        if excludedPlayers[playerName] then
+            excludedPlayers[playerName] = nil
+            excludePlayerInput.PlaceholderText = "Re-included: " .. playerName
+        else
+            excludedPlayers[playerName] = true
+            excludePlayerInput.PlaceholderText = "Added: " .. playerName
+        end
         excludePlayerInput.Text = ""
-        excludePlayerInput.PlaceholderText = "Added: " .. playerName
         task.delay(2, function()
             excludePlayerInput.PlaceholderText = "Enter Player Name to Exclude"
         end)
@@ -366,32 +365,30 @@ confirmExcludePlayerBtn.MouseButton1Click:Connect(function()
 end)
 
 -- Exclude Teams Button Logic
+local function toggleTeamExclusion(teamName, button)
+    excludedTeams[teamName] = not excludedTeams[teamName]
+    setButtonText(button, excludedTeams[teamName])
+end
+
 excludePurpleTeamBtn.MouseButton1Click:Connect(function()
-    excludedTeams["Purple"] = not excludedTeams["Purple"]
-    setButtonText(excludePurpleTeamBtn, excludedTeams["Purple"])
+    toggleTeamExclusion("Purple", excludePurpleTeamBtn)
 end)
 
 excludeBlueTeamBtn.MouseButton1Click:Connect(function()
-    excludedTeams["Blue"] = not excludedTeams["Blue"]
-    setButtonText(excludeBlueTeamBtn, excludedTeams["Blue"])
+    toggleTeamExclusion("Blue", excludeBlueTeamBtn)
 end)
 
 excludeGreenTeamBtn.MouseButton1Click:Connect(function()
-    excludedTeams["Green"] = not excludedTeams["Green"]
-    setButtonText(excludeGreenTeamBtn, excludedTeams["Green"])
+    toggleTeamExclusion("Green", excludeGreenTeamBtn)
 end)
 
 excludePinkTeamBtn.MouseButton1Click:Connect(function()
-    excludedTeams["Pink"] = not excludedTeams["Pink"]
-    setButtonText(excludePinkTeamBtn, excludedTeams["Pink"])
+    toggleTeamExclusion("Pink", excludePinkTeamBtn)
 end)
 
--- Exclude Staff Button Logic
 excludeStaffBtn.MouseButton1Click:Connect(function()
-    excludedTeams["Staff"] = not excludedTeams["Staff"]
-    setButtonText(excludeStaffBtn, excludedTeams["Staff"])
+    toggleTeamExclusion("Staff", excludeStaffBtn)
 end)
-
 
 -- Add Keybind Input
 local keybindContainer = Instance.new("Frame")
@@ -431,32 +428,30 @@ creditsSectionBtn.MouseButton1Click:Connect(function()
 end)
 
 discordBtn.MouseButton1Click:Connect(function()
-        setclipboard("https://discord.gg/5pnBUBrtnZ")
-        discordBtn.Text = "Copied!"
-        task.delay(2, function()
-            discordBtn.Text = "Copy Discord"
-        end)
+    setclipboard("https://discord.gg/5pnBUBrtnZ ")
+    discordBtn.Text = "Copied!"
+    task.delay(2, function()
+        discordBtn.Text = "Copy Discord"
     end)
+end)
 
 youtubeBtn.MouseButton1Click:Connect(function()
-        setClipboard("https://www.youtube.com/@pridescruelty")
-        youtubeBtn.Text = "Copied!"
-        task.delay(2, function()
-            youtubeBtn.Text = "Copy YouTube"
-        end)
+    setClipboard("https://www.youtube.com/ @pridescruelty")
+    youtubeBtn.Text = "Copied!"
+    task.delay(2, function()
+        youtubeBtn.Text = "Copy YouTube"
     end)
+end)
 
 -- Confirm Keybind Button Logic
 confirmKeybindBtn.MouseButton1Click:Connect(function()
     local userInput = string.upper(keybindInput.Text) -- Get user input and normalize to uppercase
     local newKey = Enum.KeyCode[userInput] -- Check if the input corresponds to a valid KeyCode
-
     if newKey then
         currentKeybind = newKey -- Update the keybind
         keybindText = userInput -- Update the displayed key name
         keybindInput.Text = "Change Keybind (Current: " .. keybindText .. ")"
         keybindInput.BackgroundColor3 = COLORS.button -- Reset color
-        
         -- Success animation
         local successStroke = addStroke(keybindInput, Color3.fromRGB(0, 255, 100), 2)
         TweenService:Create(successStroke, TweenInfo.new(1), {Transparency = 1}):Play()
@@ -464,7 +459,6 @@ confirmKeybindBtn.MouseButton1Click:Connect(function()
     else
         keybindInput.Text = "Invalid Key! Try again."
         keybindInput.BackgroundColor3 = Color3.fromRGB(255, 70, 70) -- Highlight invalid input
-        
         -- Error shake animation
         local originalPos = keybindInput.Position
         for i = 1, 5 do
@@ -472,7 +466,6 @@ confirmKeybindBtn.MouseButton1Click:Connect(function()
             task.wait(0.05)
         end
         TweenService:Create(keybindInput, TweenInfo.new(0.05), {Position = originalPos}):Play()
-        
         -- Reset after 2 seconds
         task.delay(2, function()
             keybindInput.Text = "Change Keybind (Current: " .. keybindText .. ")"
@@ -483,16 +476,13 @@ end)
 
 -- GUI Visibility Toggle with animation
 local guiVisible = true
-
 UserInputService.InputBegan:Connect(function(input)
     if input.KeyCode == currentKeybind then
         guiVisible = not guiVisible
-        
         if guiVisible then
             mainFrame.Visible = true
             mainFrame.Size = UDim2.new(0, 400 * 0.8, 0, 300 * 0.8)
             mainFrame.BackgroundTransparency = 1
-            
             TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
                 Size = UDim2.new(0, 400, 0, 300),
                 BackgroundTransparency = 0
@@ -502,7 +492,6 @@ UserInputService.InputBegan:Connect(function(input)
                 Size = UDim2.new(0, 400 * 0.8, 0, 300 * 0.8),
                 BackgroundTransparency = 1
             }):Play()
-            
             task.delay(0.3, function()
                 mainFrame.Visible = false
             end)
@@ -525,5 +514,13 @@ return {
     showDirtyLinensBtn = showDirtyLinensBtn,
     hideInsanityPropsBtn = hideInsanityPropsBtn,
     unloadGuiBtn = unloadGuiBtn,
-    doorAttackBtn = doorAttackBtn
+    doorAttackBtn = doorAttackBtn,
+    confirmExcludePlayerBtn = confirmExcludePlayerBtn,
+    excludePurpleTeamBtn = excludePurpleTeamBtn,
+    excludeBlueTeamBtn = excludeBlueTeamBtn,
+    excludeGreenTeamBtn = excludeGreenTeamBtn,
+    excludePinkTeamBtn = excludePinkTeamBtn,
+    excludeStaffBtn = excludeStaffBtn,
+    discordBtn = discordBtn,
+    youtubeBtn = youtubeBtn
 }
