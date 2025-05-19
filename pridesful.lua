@@ -757,38 +757,58 @@ task.spawn(function()
     end
 end)
 
--- DOOR ATTACK LOOP
+local DEBUG = false
+
 task.spawn(function()
     while true do
         if isDoorAttackEnabled then
             local targets = {}
+            if DEBUG then print("[Door-Attack] Scan start") end
+
             for _, door in ipairs(doorsFolder:GetChildren()) do
-                local canBreak = door:GetAttribute("canBreak")
+                -- read attributes first
+                local canBreak      = door:GetAttribute("canBreak")
                 local currentHealth = door:GetAttribute("currentHealth")
 
-                -- Handle Model position via PrimaryPart
-                local hrpPos = HumanoidRootPart.Position
-                local doorPos = nil
-
+                -- resolve position (model or part)
+                local doorPos
                 if door:IsA("Model") and door.PrimaryPart then
-                    local primaryPart = door:FindFirstChild(door.PrimaryPart.Name)
-                    if primaryPart then
-                        doorPos = primaryPart.Position
-                    end
+                    doorPos = door.PrimaryPart.Position
                 elseif door:IsA("BasePart") then
                     doorPos = door.Position
                 end
 
-                -- Validate and collect valid targets
-                if canBreak == true and currentHealth and currentHealth > 0 and doorPos then
-                    if (hrpPos - doorPos).Magnitude <= attackRange then
-                        table.insert(targets, door)
+                -- optional debug dump for every door we iterate
+                if DEBUG then
+                    print(string.format(
+                        "[Door-Attack] • %s  | canBreak=%s  currentHealth=%s  posNil=%s",
+                        door:GetFullName(),
+                        tostring(canBreak),
+                        tostring(currentHealth),
+                        tostring(doorPos == nil)
+                    ))
+                end
+
+                -- eligibility check
+                if canBreak
+                    and currentHealth and currentHealth > 0
+                    and doorPos
+                    and (HumanoidRootPart.Position - doorPos).Magnitude <= attackRange
+                then
+                    if DEBUG then
+                        print("[Door-Attack]   → Added target:", door:GetFullName())
                     end
+                    table.insert(targets, door)
                 end
             end
 
             if #targets > 0 then
+                if DEBUG then
+                    print("[Door-Attack] Firing remote with", #targets, "target(s)")
+                end
                 attackEvent:FireServer("AttackPlayers", targets)
+            elseif DEBUG then
+                print("[Door-Attack] No valid targets this tick")
             end
         end
 
