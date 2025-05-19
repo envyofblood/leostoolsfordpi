@@ -278,6 +278,9 @@ local unloadGuiBtn
 local discordBtn
 local youtubeBtn
 
+local nightVisionEnabled = false
+local nightVisionLoop    = nil     -- will hold the task for the loop
+
 -- Main Section Buttons
 autoAttackBtn = createButton(mainSection, "Auto Attack", UDim2.new(0, 10, 0, 20))
 divineBlessingBtn = createButton(mainSection, "Divine Blessing", UDim2.new(0, 10, 0, 70))
@@ -285,19 +288,43 @@ doorAttackBtn = createButton(mainSection, "Door Attack (Only Big Monster)", UDim
 
 -- Visuals Section Buttons
 showDirtyLinensBtn = createButton(visualsSection, "Show Dirty Linens", UDim2.new(0, 10, 0, 20))
-hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 70))
+hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2.new(0, 10, 0, 60))
 
 -- Settings Section Buttons
-unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 20))
+unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 10))
 
 -- Credits Buttons
 discordBtn = createButton(creditsSection, "Copy Discord", UDim2.new(0, 10, 0, 20))
-youtubeBtn = createButton(creditsSection, "Copy YouTube", UDim2.new(0, 10, 0, 70))
+youtubeBtn = createButton(creditsSection, "Copy YouTube", UDim2.new(0, 10, 0, 60))
 
 local exclusionSectionBtn = createButton(sidebar, "Exclusions", UDim2.new(0, 10, 0, 210))
 
+local nightVisionBtn = createButton(visualsSection, "Night-Vision : OFF", UDim2.new(0, 10, 0, 100))
+
 exclusionSectionBtn.MouseButton1Click:Connect(function()
     showSection(exclusionSection)
+end)
+
+
+local function setNightVision(on)
+    nightVisionEnabled = on
+    nightVisionBtn.Text = on and "Night-Vision : ON" or "Night-Vision : OFF"
+
+    -- stop previous loop if it exists
+    if nightVisionLoop then
+        nightVisionLoop:Disconnect()
+        nightVisionLoop = nil
+    end
+
+    if on then
+        nightVisionLoop = game:GetService("RunService").Heartbeat:Connect(function(step)
+            game.Lighting.TimeOfDay = "14:00:00"   -- bright afternoon
+        end)
+    end
+end
+
+nightVisionBtn.MouseButton1Click:Connect(function()
+    setNightVision(not nightVisionEnabled)
 end)
 
 -- Exclusion Lists
