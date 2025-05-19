@@ -186,6 +186,36 @@ mainSection.Position = UDim2.new(0, 0, 0, 0)
 mainSection.BackgroundTransparency = 1
 mainSection.Parent = contentArea
 
+local exclusionContainer = Instance.new("Frame")
+exclusionContainer.Size = UDim2.new(1, -20, 0, 150)
+exclusionContainer.Position = UDim2.new(0, 10, 0, 160)
+exclusionContainer.BackgroundTransparency = 1
+exclusionContainer.Parent = mainSection
+
+-- Title for Exclusion Settings
+local exclusionTitle = Instance.new("TextLabel")
+exclusionTitle.Size = UDim2.new(1, 0, 0, 20)
+exclusionTitle.Position = UDim2.new(0, 0, 0, 0)
+exclusionTitle.BackgroundTransparency = 1
+exclusionTitle.Text = "Exclusion Settings"
+exclusionTitle.TextColor3 = COLORS.text
+exclusionTitle.Font = Enum.Font.GothamBold
+exclusionTitle.TextSize = 14
+exclusionTitle.Parent = exclusionContainer
+
+-- Textbox for manual player exclusion
+local excludePlayerInput = Instance.new("TextBox")
+excludePlayerInput.Size = UDim2.new(1, 0, 0, 30)
+excludePlayerInput.Position = UDim2.new(0, 0, 0, 25)
+excludePlayerInput.BackgroundColor3 = COLORS.button
+excludePlayerInput.TextColor3 = COLORS.text
+excludePlayerInput.Font = Enum.Font.Gotham
+excludePlayerInput.TextSize = 14
+excludePlayerInput.PlaceholderText = "Enter Player Name to Exclude"
+excludePlayerInput.ClearTextOnFocus = false
+excludePlayerInput.Parent = exclusionContainer
+addCorners(excludePlayerInput, 8)
+
 -- Status Panel
 local statusPanel = Instance.new("Frame")
 statusPanel.Size = UDim2.new(1, -20, 0, 40)
@@ -240,7 +270,6 @@ local function showSection(frameToShow)
             child.Visible = (child == frameToShow)
         end
     end
-
     -- Animate content area
     contentArea.Position = UDim2.new(1, -100, 0, 40)
     contentArea.BackgroundTransparency = 1
@@ -248,14 +277,12 @@ local function showSection(frameToShow)
         Position = UDim2.new(0, 100, 0, 40),
         BackgroundTransparency = 0
     }):Play()
-
     -- Highlight selected tab
-    for _, btn in pairs({mainSectionBtn, visualsSectionBtn, settingsSectionBtn}) do
+    for _, btn in pairs({mainSectionBtn, visualsSectionBtn, settingsSectionBtn, creditsSectionBtn}) do
         if btn then
             btn.BackgroundColor3 = COLORS.button
         end
     end
-
     if frameToShow == mainSection then
         TweenService:Create(mainSectionBtn, TweenInfo.new(0.2), {BackgroundColor3 = COLORS.accent}):Play()
     elseif frameToShow == visualsSection then
@@ -291,8 +318,80 @@ hideInsanityPropsBtn = createButton(visualsSection, "Hide Insanity Props", UDim2
 -- Settings Section Buttons
 unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 20))
 
+local confirmExcludePlayerBtn = createButton(exclusionContainer, "Add Player", UDim2.new(0, 0, 0, 60))
+
+-- Buttons to exclude teams
+local excludePurpleTeamBtn = createButton(exclusionContainer, "Exclude Purple Team", UDim2.new(0, 0, 0, 100))
+local excludeBlueTeamBtn = createButton(exclusionContainer, "Exclude Blue Team", UDim2.new(0, 0, 0, 140))
+local excludeGreenTeamBtn = createButton(exclusionContainer, "Exclude Green Team", UDim2.new(0, 0, 0, 180))
+local excludePinkTeamBtn = createButton(exclusionContainer, "Exclude Pink Team", UDim2.new(0, 0, 0, 220))
+
+-- Button to exclude staff
+local excludeStaffBtn = createButton(exclusionContainer, "Exclude Staff", UDim2.new(0, 0, 0, 260))
+
 discordBtn = createButton(creditsSection, "Copy Discord", UDim2.new(0, 10, 0, 20))
 youtubeBtn = createButton(creditsSection, "Copy YouTube", UDim2.new(0, 10, 0, 70))
+
+-- Variables to store excluded players and teams
+local excludedPlayers = {}
+local excludedTeams = {}
+
+-- Function to check if a player should be excluded
+local function shouldExclude(player)
+    if excludedPlayers[player.Name] then
+        return true
+    end
+    local team = player.Character and player.Character:GetAttribute("Team")
+    if team and excludedTeams[team] then
+        return true
+    end
+    local trueRank = game.Players:GetAttribute("TrueRank")
+    if trueRank and trueRank >= 50 and excludedTeams["Staff"] then
+        return true
+    end
+    return false
+end
+
+-- Confirm Player Exclusion Button Logic
+confirmExcludePlayerBtn.MouseButton1Click:Connect(function()
+    local playerName = excludePlayerInput.Text
+    if playerName ~= "" then
+        excludedPlayers[playerName] = true
+        excludePlayerInput.Text = ""
+        excludePlayerInput.PlaceholderText = "Added: " .. playerName
+        task.delay(2, function()
+            excludePlayerInput.PlaceholderText = "Enter Player Name to Exclude"
+        end)
+    end
+end)
+
+-- Exclude Teams Button Logic
+excludePurpleTeamBtn.MouseButton1Click:Connect(function()
+    excludedTeams["Purple"] = not excludedTeams["Purple"]
+    setButtonText(excludePurpleTeamBtn, excludedTeams["Purple"])
+end)
+
+excludeBlueTeamBtn.MouseButton1Click:Connect(function()
+    excludedTeams["Blue"] = not excludedTeams["Blue"]
+    setButtonText(excludeBlueTeamBtn, excludedTeams["Blue"])
+end)
+
+excludeGreenTeamBtn.MouseButton1Click:Connect(function()
+    excludedTeams["Green"] = not excludedTeams["Green"]
+    setButtonText(excludeGreenTeamBtn, excludedTeams["Green"])
+end)
+
+excludePinkTeamBtn.MouseButton1Click:Connect(function()
+    excludedTeams["Pink"] = not excludedTeams["Pink"]
+    setButtonText(excludePinkTeamBtn, excludedTeams["Pink"])
+end)
+
+-- Exclude Staff Button Logic
+excludeStaffBtn.MouseButton1Click:Connect(function()
+    excludedTeams["Staff"] = not excludedTeams["Staff"]
+    setButtonText(excludeStaffBtn, excludedTeams["Staff"])
+end)
+
 
 -- Add Keybind Input
 local keybindContainer = Instance.new("Frame")
@@ -325,6 +424,10 @@ end)
 
 settingsSectionBtn.MouseButton1Click:Connect(function()
     showSection(settingsSection)
+end)
+
+creditsSectionBtn.MouseButton1Click:Connect(function()
+    showSection(creditsSection)
 end)
 
 discordBtn.MouseButton1Click:Connect(function()
