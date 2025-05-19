@@ -25,7 +25,7 @@ local COLORS = {
 }
 
 -- Prevent duplicate GUI creation
-local guiName = "LeoToolsGUI"
+local guiName = "Pridesful"
 if PlayerGui:FindFirstChild(guiName) then
     return {} -- Don't load again
 end
