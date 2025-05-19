@@ -1,10 +1,10 @@
--- V1.7.2
+-- V1.8
 -- By leothesavior aka @pridescruelty
 -- https://www.youtube.com/@pridescruelty/
 
 local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/ui.lua"
 local uiModule = nil
-local guiName = "LeoDPITools"
+local guiName = "Pridesful"
 
 repeat
     task.wait()
