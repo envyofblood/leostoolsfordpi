@@ -1,6 +1,5 @@
 -- leo's UI library
--- V2.1
-
+-- V2.0.1
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -251,7 +250,7 @@ local function updateStatusText()
     local character = game.Players.LocalPlayer
     local insanityValue = character:GetAttribute("Insanity") or "Blur value not found, check F9"
     local currentTime = game.Lighting.TimeOfDay -- Get current time in HH:MM:SS format
-    statusText.Text = string.format("Time: " .. currentTime .. " | Blurs: " .. insanityValue)
+    statusText.Text = string.format("Time: %s | Blurs: %s", currentTime, insanityValue)
 end
 
 -- Clear content area and show selected section
@@ -429,7 +428,7 @@ creditsSectionBtn.MouseButton1Click:Connect(function()
 end)
 
 discordBtn.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.gg/5pnBUBrtnZ")
+    setclipboard("https://discord.gg/5pnBUBrtnZ ")
     discordBtn.Text = "Copied!"
     task.delay(2, function()
         discordBtn.Text = "Copy Discord"
@@ -437,7 +436,7 @@ discordBtn.MouseButton1Click:Connect(function()
 end)
 
 youtubeBtn.MouseButton1Click:Connect(function()
-    setClipboard("https://www.youtube.com/@pridescruelty")
+    setClipboard("https://www.youtube.com/ @pridescruelty")
     youtubeBtn.Text = "Copied!"
     task.delay(2, function()
         youtubeBtn.Text = "Copy YouTube"
