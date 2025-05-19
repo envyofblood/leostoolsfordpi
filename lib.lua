@@ -7,8 +7,8 @@ local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 -- Keybind Variables
-local currentKeybind = Enum.KeyCode.G -- Default key
-local keybindText = "G" -- Displayed key name
+local currentKeybind = Enum.KeyCode.Insert -- Default key
+local keybindText = "Insert" -- Displayed key name
 
 -- Color Theme
 local COLORS = {
