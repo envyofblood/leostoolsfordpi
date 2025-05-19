@@ -1,11 +1,12 @@
--- V1.9
+-- V2
 -- By leothesavior aka @pridescruelty
 -- https://www.youtube.com/ @pridescruelty/
-local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/lib.lua"
 
+local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/lib.lua"
 local uiModule = nil
 local guiName = "Pridesful"
 
+-- Load UI Library
 repeat
     task.wait()
     local success, result = pcall(function()
@@ -25,6 +26,14 @@ local showDirtyLinensBtn = uiModule.showDirtyLinensBtn
 local hideInsanityPropsBtn = uiModule.hideInsanityPropsBtn
 local unloadGuiBtn = uiModule.unloadGuiBtn
 local doorAttackBtn = uiModule.doorAttackBtn
+
+-- Exclusion Buttons
+local confirmExcludePlayerBtn = uiModule.confirmExcludePlayerBtn
+local excludePurpleTeamBtn = uiModule.excludePurpleTeamBtn
+local excludeBlueTeamBtn = uiModule.excludeBlueTeamBtn
+local excludeGreenTeamBtn = uiModule.excludeGreenTeamBtn
+local excludePinkTeamBtn = uiModule.excludePinkTeamBtn
+local excludeStaffBtn = uiModule.excludeStaffBtn
 
 -- Services
 local Players = game:GetService("Players")
@@ -56,107 +65,10 @@ local function isNear(otherChar, range)
     return false
 end
 
--- Exclusion Logic
-local excludedPlayers = {}
-local excludedTeams = {}
-
-local function shouldExclude(player)
-    if excludedPlayers[player.Name] then
-        return true
-    end
-    local team = player.Character and player.Character:GetAttribute("Team")
-    if team and excludedTeams[team] then
-        return true
-    end
-    local trueRank = player:GetAttribute("TrueRank")
-    if trueRank and trueRank >= 50 and excludedTeams["Staff"] then
-        return true
-    end
-    return false
-end
-
 -- Button State Management
 function setButtonText(button, state)
     button.Text = button.Text:match(".*: ") and button.Text:gsub(": .*", ": " .. (state and "ON" or "OFF")) or button.Text .. ": " .. (state and "ON" or "OFF")
 end
-
--- Auto Attack Button
-autoAttackBtn.MouseButton1Click:Connect(function()
-    isAutoAttackEnabled = not isAutoAttackEnabled
-    setButtonText(autoAttackBtn, isAutoAttackEnabled)
-end)
-
--- Divine Blessing Button
-divineBlessingBtn.MouseButton1Click:Connect(function()
-    isAttributeLoopEnabled = not isAttributeLoopEnabled
-    setButtonText(divineBlessingBtn, isAttributeLoopEnabled)
-    if not isAttributeLoopEnabled then
-        local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        for _, attr in pairs(attributesList) do
-            character:SetAttribute(attr, 100)
-        end
-    end
-end)
-
--- Destroy insanity props
-local function destroyInsanityProps()
-    local insanityFolder = Workspace:FindFirstChild("Essentials") and Workspace.Essentials:FindFirstChild("Insanity")
-    if not insanityFolder then return end
-    for _, obj in ipairs(insanityFolder:GetDescendants()) do
-        if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Decal") or obj:IsA("ImageLabel") or obj:IsA("TextLabel") then
-            obj:Destroy()
-        end
-    end
-end
-
--- Door Attack Button
-doorAttackBtn.MouseButton1Click:Connect(function()
-    isDoorAttackEnabled = not isDoorAttackEnabled
-    setButtonText(doorAttackBtn, isDoorAttackEnabled)
-end)
-
--- Show Dirty Linens Button
-showDirtyLinensBtn.MouseButton1Click:Connect(function()
-    isESPEnabled = not isESPEnabled
-    setButtonText(showDirtyLinensBtn, isESPEnabled)
-end)
-
--- Hide Insanity Props Button
-hideInsanityPropsBtn.MouseButton1Click:Connect(function()
-    isHideInsanityPropsEnabled = not isHideInsanityPropsEnabled
-    setButtonText(hideInsanityPropsBtn, isHideInsanityPropsEnabled)
-    if isHideInsanityPropsEnabled then
-        spawn(destroyInsanityProps)
-        hideInsanityPropsBtn.Text = "Done! Destroying this button now."
-        wait(1)
-        hideInsanityPropsBtn:Destroy()
-    end
-end)
-
--- Unload GUI Button
-unloadGuiBtn.MouseButton1Click:Connect(function()
-    -- Turn off all features
-    isAutoAttackEnabled = false
-    isAttributeLoopEnabled = false
-    isESPEnabled = false
-    isHideInsanityPropsEnabled = false
-    -- Reset button texts
-    setButtonText(autoAttackBtn, false)
-    setButtonText(divineBlessingBtn, false)
-    setButtonText(showDirtyLinensBtn, false)
-    setButtonText(hideInsanityPropsBtn, false)
-    -- Destroy GUI
-    local gui = PlayerGui:FindFirstChild(guiName)
-    if gui then
-        gui:Destroy()
-    end
-end)
-
--- Character Respawn Handler
-LocalPlayer.CharacterAdded:Connect(function(char)
-    Character = char
-    HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-end)
 
 -- Auto Attack Loop
 task.spawn(function()
@@ -164,7 +76,7 @@ task.spawn(function()
         if isAutoAttackEnabled then
             local targets = {}
             for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and not shouldExclude(player) then
+                if player ~= LocalPlayer and not uiModule.shouldExclude(player) then
                     local character = player.Character
                     if character and isNear(character, attackRange) then
                         table.insert(targets, character)
@@ -176,6 +88,18 @@ task.spawn(function()
             end
         end
         task.wait(0.5)
+    end
+end)
+
+-- Divine Blessing Button
+divineBlessingBtn.MouseButton1Click:Connect(function()
+    isAttributeLoopEnabled = not isAttributeLoopEnabled
+    setButtonText(divineBlessingBtn, isAttributeLoopEnabled)
+    if not isAttributeLoopEnabled then
+        local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        for _, attr in pairs(attributesList) do
+            character:SetAttribute(attr, 100)
+        end
     end
 end)
 
@@ -193,6 +117,12 @@ task.spawn(function()
         end
         task.wait(0.7)
     end
+end)
+
+-- Door Attack Button
+doorAttackBtn.MouseButton1Click:Connect(function()
+    isDoorAttackEnabled = not isDoorAttackEnabled
+    setButtonText(doorAttackBtn, isDoorAttackEnabled)
 end)
 
 -- DOOR ATTACK LOOP
@@ -227,6 +157,12 @@ task.spawn(function()
         end
         task.wait(isDoorAttackEnabled and 0.2 or 0.1)
     end
+end)
+
+-- Show Dirty Linens Button
+showDirtyLinensBtn.MouseButton1Click:Connect(function()
+    isESPEnabled = not isESPEnabled
+    setButtonText(showDirtyLinensBtn, isESPEnabled)
 end)
 
 -- ESP Folder
@@ -275,4 +211,41 @@ task.spawn(function()
         end
         task.wait(1)
     end
+end)
+
+-- Hide Insanity Props Button
+hideInsanityPropsBtn.MouseButton1Click:Connect(function()
+    isHideInsanityPropsEnabled = not isHideInsanityPropsEnabled
+    setButtonText(hideInsanityPropsBtn, isHideInsanityPropsEnabled)
+    if isHideInsanityPropsEnabled then
+        spawn(uiModule.destroyInsanityProps)
+        hideInsanityPropsBtn.Text = "Done! Destroying this button now."
+        wait(1)
+        hideInsanityPropsBtn:Destroy()
+    end
+end)
+
+-- Unload GUI Button
+unloadGuiBtn.MouseButton1Click:Connect(function()
+    -- Turn off all features
+    isAutoAttackEnabled = false
+    isAttributeLoopEnabled = false
+    isESPEnabled = false
+    isHideInsanityPropsEnabled = false
+    -- Reset button texts
+    setButtonText(autoAttackBtn, false)
+    setButtonText(divineBlessingBtn, false)
+    setButtonText(showDirtyLinensBtn, false)
+    setButtonText(hideInsanityPropsBtn, false)
+    -- Destroy GUI
+    local gui = PlayerGui:FindFirstChild(guiName)
+    if gui then
+        gui:Destroy()
+    end
+end)
+
+-- Character Respawn Handler
+LocalPlayer.CharacterAdded:Connect(function(char)
+    Character = char
+    HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 end)
