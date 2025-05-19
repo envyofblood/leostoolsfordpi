@@ -1,12 +1,11 @@
--- V2
+
 -- By leothesavior aka @pridescruelty
 -- https://www.youtube.com/ @pridescruelty/
 
-local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/lib.lua"
+local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/lib.lua "
 local uiModule = nil
 local guiName = "Pridesful"
 
--- Load UI Library
 repeat
     task.wait()
     local success, result = pcall(function()
@@ -26,8 +25,6 @@ local showDirtyLinensBtn = uiModule.showDirtyLinensBtn
 local hideInsanityPropsBtn = uiModule.hideInsanityPropsBtn
 local unloadGuiBtn = uiModule.unloadGuiBtn
 local doorAttackBtn = uiModule.doorAttackBtn
-
--- Exclusion Buttons
 local confirmExcludePlayerBtn = uiModule.confirmExcludePlayerBtn
 local excludePurpleTeamBtn = uiModule.excludePurpleTeamBtn
 local excludeBlueTeamBtn = uiModule.excludeBlueTeamBtn
@@ -65,11 +62,6 @@ local function isNear(otherChar, range)
     return false
 end
 
--- Button State Management
-function setButtonText(button, state)
-    button.Text = button.Text:match(".*: ") and button.Text:gsub(": .*", ": " .. (state and "ON" or "OFF")) or button.Text .. ": " .. (state and "ON" or "OFF")
-end
-
 -- Auto Attack Loop
 task.spawn(function()
     while true do
@@ -94,7 +86,7 @@ end)
 -- Divine Blessing Button
 divineBlessingBtn.MouseButton1Click:Connect(function()
     isAttributeLoopEnabled = not isAttributeLoopEnabled
-    setButtonText(divineBlessingBtn, isAttributeLoopEnabled)
+    uiModule.setButtonText(divineBlessingBtn, isAttributeLoopEnabled)
     if not isAttributeLoopEnabled then
         local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
         for _, attr in pairs(attributesList) do
@@ -122,7 +114,7 @@ end)
 -- Door Attack Button
 doorAttackBtn.MouseButton1Click:Connect(function()
     isDoorAttackEnabled = not isDoorAttackEnabled
-    setButtonText(doorAttackBtn, isDoorAttackEnabled)
+    uiModule.setButtonText(doorAttackBtn, isDoorAttackEnabled)
 end)
 
 -- DOOR ATTACK LOOP
@@ -162,61 +154,13 @@ end)
 -- Show Dirty Linens Button
 showDirtyLinensBtn.MouseButton1Click:Connect(function()
     isESPEnabled = not isESPEnabled
-    setButtonText(showDirtyLinensBtn, isESPEnabled)
-end)
-
--- ESP Folder
-local linenESPFolder = Instance.new("Folder")
-linenESPFolder.Name = "LinenESP"
-linenESPFolder.Parent = PlayerGui
-
--- ESP Loop
-task.spawn(function()
-    while true do
-        if isESPEnabled then
-            for _, gui in ipairs(linenESPFolder:GetChildren()) do
-                gui:Destroy()
-            end
-            local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if root then
-                local beds = Workspace:WaitForChild("Essentials", 10):WaitForChild("Interactables", 10):WaitForChild("BedFolder", 10):GetChildren()
-                for _, bed in ipairs(beds) do
-                    if bed:IsA("Model") and not bed:GetAttribute("NoLinen") and (bed:GetAttribute("Dirtiness") or 0) >= 2 then
-                        local bedPart = bed.PrimaryPart or bed:FindFirstChildWhichIsA("BasePart")
-                        if bedPart then
-                            local distance = (bedPart.Position - root.Position).Magnitude
-                            local adorn = Instance.new("BillboardGui")
-                            adorn.Name = "ESP_" .. bed.Name
-                            adorn.AlwaysOnTop = true
-                            adorn.Size = UDim2.new(0, 200, 0, 50)
-                            adorn.Adornee = bedPart
-                            adorn.Parent = linenESPFolder
-                            local textLabel = Instance.new("TextLabel")
-                            textLabel.Size = UDim2.new(1, 0, 1, 0)
-                            textLabel.BackgroundTransparency = 1
-                            textLabel.TextColor3 = Color3.new(1, 1, 1)
-                            textLabel.TextStrokeTransparency = 0.5
-                            textLabel.TextSize = 16
-                            textLabel.Font = Enum.Font.GothamBold
-                            textLabel.Text = "Dirty Linen\n" .. math.floor(distance) .. " studs"
-                            textLabel.Parent = adorn
-                        end
-                    end
-                end
-            end
-        else
-            for _, gui in ipairs(linenESPFolder:GetChildren()) do
-                gui:Destroy()
-            end
-        end
-        task.wait(1)
-    end
+    uiModule.setButtonText(showDirtyLinensBtn, isESPEnabled)
 end)
 
 -- Hide Insanity Props Button
 hideInsanityPropsBtn.MouseButton1Click:Connect(function()
     isHideInsanityPropsEnabled = not isHideInsanityPropsEnabled
-    setButtonText(hideInsanityPropsBtn, isHideInsanityPropsEnabled)
+    uiModule.setButtonText(hideInsanityPropsBtn, isHideInsanityPropsEnabled)
     if isHideInsanityPropsEnabled then
         spawn(uiModule.destroyInsanityProps)
         hideInsanityPropsBtn.Text = "Done! Destroying this button now."
@@ -233,10 +177,10 @@ unloadGuiBtn.MouseButton1Click:Connect(function()
     isESPEnabled = false
     isHideInsanityPropsEnabled = false
     -- Reset button texts
-    setButtonText(autoAttackBtn, false)
-    setButtonText(divineBlessingBtn, false)
-    setButtonText(showDirtyLinensBtn, false)
-    setButtonText(hideInsanityPropsBtn, false)
+    uiModule.setButtonText(autoAttackBtn, false)
+    uiModule.setButtonText(divineBlessingBtn, false)
+    uiModule.setButtonText(showDirtyLinensBtn, false)
+    uiModule.setButtonText(hideInsanityPropsBtn, false)
     -- Destroy GUI
     local gui = PlayerGui:FindFirstChild(guiName)
     if gui then
