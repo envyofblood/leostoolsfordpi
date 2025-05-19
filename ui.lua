@@ -1,5 +1,5 @@
 -- leo's UI library
--- V2.0.0
+-- V2.0.1
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -94,7 +94,7 @@ addCorners(titleBar, 12)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundTransparency = 1
-title.Text = "Leo's Tools for DPI"
+title.Text = "Pridesful"
 title.TextColor3 = COLORS.text
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
