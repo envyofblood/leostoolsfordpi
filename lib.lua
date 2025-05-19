@@ -1,5 +1,5 @@
 -- leo's UI library
--- V2
+-- V2.1
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -429,7 +429,7 @@ creditsSectionBtn.MouseButton1Click:Connect(function()
 end)
 
 discordBtn.MouseButton1Click:Connect(function()
-    setclipboard("https://discord.gg/5pnBUBrtnZ ")
+    setclipboard("https://discord.gg/5pnBUBrtnZ")
     discordBtn.Text = "Copied!"
     task.delay(2, function()
         discordBtn.Text = "Copy Discord"
@@ -437,7 +437,7 @@ discordBtn.MouseButton1Click:Connect(function()
 end)
 
 youtubeBtn.MouseButton1Click:Connect(function()
-    setClipboard("https://www.youtube.com/ @pridescruelty")
+    setClipboard("https://www.youtube.com/@pridescruelty")
     youtubeBtn.Text = "Copied!"
     task.delay(2, function()
         youtubeBtn.Text = "Copy YouTube"
