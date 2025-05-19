@@ -648,7 +648,6 @@ end)
 -- Hide Insanity Props Button
 hideInsanityPropsBtn.MouseButton1Click:Connect(function()
     isHideInsanityPropsEnabled = not isHideInsanityPropsEnabled
-    setButtonText(hideInsanityPropsBtn, isHideInsanityPropsEnabled)
 
     if isHideInsanityPropsEnabled then
         spawn(destroyInsanityProps)
