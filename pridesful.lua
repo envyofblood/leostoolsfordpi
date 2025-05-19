@@ -176,6 +176,20 @@ mainSection.Position = UDim2.new(0, 0, 0, 0)
 mainSection.BackgroundTransparency = 1
 mainSection.Parent = contentArea
 
+local exclusionSection = Instance.new("Frame")
+exclusionSection.Size = UDim2.new(1, 0, 1, 0)
+exclusionSection.Position = UDim2.new(0, 0, 0, 0)
+exclusionSection.BackgroundTransparency = 1
+exclusionSection.Parent = contentArea
+
+-- Horizontal Container
+local container = Instance.new("Frame")
+container.Size = UDim2.new(1, -20, 1, -20)
+container.Position = UDim2.new(0, 10, 0, 10)
+container.BackgroundTransparency = 1
+container.Parent = exclusionSection
+
+
 -- Status Panel
 local statusPanel = Instance.new("Frame")
 statusPanel.Size = UDim2.new(1, -20, 0, 40)
@@ -280,6 +294,155 @@ unloadGuiBtn = createButton(settingsSection, "Unload GUI", UDim2.new(0, 10, 0, 2
 discordBtn = createButton(creditsSection, "Copy Discord", UDim2.new(0, 10, 0, 20))
 youtubeBtn = createButton(creditsSection, "Copy YouTube", UDim2.new(0, 10, 0, 70))
 
+local exclusionSectionBtn = createButton(sidebar, "Exclusions", UDim2.new(0, 10, 0, 210))
+
+exclusionSectionBtn.MouseButton1Click:Connect(function()
+    showSection(exclusionSection)
+end)
+
+-- Exclusion Lists
+excludedPlayers = {}
+excludedTeams = {}
+excludeStaff = false
+
+-- LEFT scroll column (replace any old inputFrame / scroll variable)
+local inputScroll = Instance.new("ScrollingFrame")
+inputScroll.Size               = UDim2.new(0.5, -5, 1, 0)
+inputScroll.Position           = UDim2.new(0, 0, 0, 0)
+inputScroll.CanvasSize         = UDim2.new(0, 0, 0, 0) -- auto-expands via AutomaticCanvasSize
+inputScroll.AutomaticCanvasSize= Enum.AutomaticSize.Y
+inputScroll.ScrollBarThickness = 6
+inputScroll.BackgroundTransparency = 1
+inputScroll.Parent             = container   -- container is the left/right splitter
+
+local inputLayout = Instance.new("UIListLayout")
+inputLayout.Padding   = UDim.new(0, 8)
+inputLayout.SortOrder = Enum.SortOrder.LayoutOrder
+inputLayout.Parent    = inputScroll
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 8)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = scroll
+
+-- RIGHT: Excluded List
+local listFrame = Instance.new("ScrollingFrame")
+listFrame.Size = UDim2.new(0.5, -5, 1, 0)
+listFrame.Position = UDim2.new(0.5, 5, 0, 0)
+listFrame.CanvasSize = UDim2.new(0, 0, 0, 500)
+listFrame.ScrollBarThickness = 6
+listFrame.BackgroundColor3 = COLORS.sidebar
+addCorners(listFrame, 8)
+addStroke(listFrame, COLORS.accent, 1)
+listFrame.Parent = container
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.Padding = UDim.new(0, 4)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Parent = listFrame
+
+local function refreshExclusionList()
+    -- keep a reference to the layout so we don’t delete it
+    local layout = listLayout   -- the one we created earlier
+
+    -- destroy everything except the layout
+    for _, child in ipairs(listFrame:GetChildren()) do
+        if child ~= layout then
+            child:Destroy()
+        end
+    end
+
+    -- Helper for adding buttons to the listFrame
+    local function addListButton(text, onClick)
+        local btn = createButton(listFrame, text, UDim2.new()) -- parent is listFrame
+        btn.MouseButton1Click:Connect(onClick)
+    end
+
+    -- Users
+    for name in pairs(excludedPlayers) do
+        addListButton("[User]  " .. name, function()
+            excludedPlayers[name] = nil
+            refreshExclusionList()
+        end)
+    end
+
+    -- Teams
+    for team in pairs(excludedTeams) do
+        addListButton("[Team]  " .. team, function()
+            excludedTeams[team] = nil
+            refreshExclusionList()
+        end)
+    end
+
+    -- Staff
+    if excludeStaff then
+        addListButton("[Staff]  TrueRank ≥ 50", function()
+            excludeStaff = false
+            refreshExclusionList()
+        end)
+    end
+end
+
+
+-- Username TextBox
+local nameBox = Instance.new("TextBox")
+nameBox.Size               = UDim2.new(1, -10, 0, 32)
+nameBox.TextXAlignment     = Enum.TextXAlignment.Left
+nameBox.TextYAlignment     = Enum.TextYAlignment.Center
+nameBox.ClearTextOnFocus   = false
+nameBox.PlaceholderText    = "Enter username to exclude"
+nameBox.BackgroundColor3   = COLORS.button
+nameBox.TextColor3         = COLORS.text
+nameBox.Font               = Enum.Font.Gotham
+nameBox.TextSize           = 14
+nameBox.Text               = ""
+nameBox.Parent             = inputScroll      -- <- scrolling frame that holds all controls
+addCorners(nameBox, 8)
+addStroke(nameBox, COLORS.accent, 1)
+
+-- padding object
+local pad = Instance.new("UIPadding")
+pad.PaddingLeft  = UDim.new(0, 6)
+pad.PaddingRight = UDim.new(0, 6)
+pad.Parent = nameBox
+
+refreshExclusionList()
+
+-- Exclude/Include Username Button
+local nameToggleBtn = createButton(inputScroll, "Exclude User", UDim2.new())
+
+nameToggleBtn.MouseButton1Click:Connect(function()
+    local name = nameBox.Text
+    if name ~= "" and Players:FindFirstChild(name) then
+        excludedPlayers[name] = true
+    end
+    nameBox.Text = ""
+    refreshExclusionList()
+end)
+
+local function makeToggle(teamName)
+    local btn = createButton(inputScroll, "Toggle Team " .. teamName, UDim2.new())
+    btn.MouseButton1Click:Connect(function()
+        if excludedTeams[teamName] then
+            excludedTeams[teamName] = nil
+        else
+            excludedTeams[teamName] = true
+        end
+        refreshExclusionList()
+    end)
+end
+makeToggle("Pink")
+makeToggle("Green")
+makeToggle("Blue")
+makeToggle("Purple")
+
+-- Staff Toggle Button
+local staffBtn = createButton(inputScroll, "Toggle Staff", UDim2.new())
+
+staffBtn.MouseButton1Click:Connect(function()
+    excludeStaff = not excludeStaff
+    refreshExclusionList()
+end)
 
 -- Add Keybind Input
 local keybindContainer = Instance.new("Frame")
@@ -327,7 +490,7 @@ discordBtn.MouseButton1Click:Connect(function()
 end)
 
 youtubeBtn.MouseButton1Click:Connect(function()
-    setClipboard("https://www.youtube.com/@pridescruelty")
+    setclipboard("https://www.youtube.com/@pridescruelty")
     youtubeBtn.Text = "Copied!"
     task.delay(2, function()
         youtubeBtn.Text = "Copy YouTube"
@@ -528,10 +691,18 @@ task.spawn(function()
         if isAutoAttackEnabled then
             local targets = {}
             for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer then
+                if player ~= LocalPlayer and not excludedPlayers[player.Name] then
                     local character = player.Character
-                    if character and isNear(character, 5) then
-                        table.insert(targets, character)
+                    if character then
+                        local team = character:GetAttribute("Team")
+                        local isTeamExcluded = team and excludedTeams[team]
+
+                        local trueRank = player:GetAttribute("TrueRank")
+                        local isStaff = excludeStaff and trueRank and trueRank >= 50
+
+                        if not isTeamExcluded and not isStaff and isNear(character, 5) then
+                            table.insert(targets, character)
+                        end
                     end
                 end
             end
@@ -542,6 +713,7 @@ task.spawn(function()
         task.wait(0.5)
     end
 end)
+
 
 -- Attribute Refill Loop
 task.spawn(function()
