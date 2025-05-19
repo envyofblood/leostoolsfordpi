@@ -288,7 +288,7 @@ function loadMainGUI()
     local youtubeBtn = createButton(creditsSection, "Copy YouTube", UDim2.new(0, 10, 0, 70))
 
     discordBtn.MouseButton1Click:Connect(function()
-        setClipboard("https://discord.gg/5pnBUBrtnZ ")
+        setclipboard("https://discord.gg/5pnBUBrtnZ")
         discordBtn.Text = "Copied!"
         task.delay(2, function()
             discordBtn.Text = "Copy Discord"
@@ -296,7 +296,7 @@ function loadMainGUI()
     end)
 
     youtubeBtn.MouseButton1Click:Connect(function()
-        setClipboard("https://www.youtube.com/ @pridescruelty")
+        setclipboard("https://www.youtube.com/@pridescruelty")
         youtubeBtn.Text = "Copied!"
         task.delay(2, function()
             youtubeBtn.Text = "Copy YouTube"
@@ -340,7 +340,7 @@ function loadMainGUI()
     local function updateStatusText()
         local LocalPlayer = Players.LocalPlayer
         local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        local insanityValue = character:GetAttribute("Insanity") or "Blur value not found"
+        local insanityValue = game.Players.LocalPlayer:GetAttribute("Insanity") or "Blur value not found"
         local currentTime = game.Lighting.TimeOfDay -- Get current time in HH:MM:SS format
         statusText.Text = string.format("Time: %s | Blurs: %s", currentTime, insanityValue)
     end
