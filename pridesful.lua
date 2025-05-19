@@ -1,8 +1,8 @@
--- V1.8
+-- V1.9
 -- By leothesavior aka @pridescruelty
--- https://www.youtube.com/@pridescruelty/
-
+-- https://www.youtube.com/ @pridescruelty/
 local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/lib.lua"
+
 local uiModule = nil
 local guiName = "Pridesful"
 
@@ -30,24 +30,20 @@ local doorAttackBtn = uiModule.doorAttackBtn
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
-
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 -- Variables
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart") or Character:WaitForChild("HumanoidRootPart")
-
 local attackEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("30")
 local doorsFolder = workspace:WaitForChild("Essentials"):WaitForChild("Interactables"):WaitForChild("Doors")
-
 local isAutoAttackEnabled = false
 local isAttributeLoopEnabled = false
 local isESPEnabled = false
 local isHideInsanityPropsEnabled = false
 local isDoorAttackEnabled = false
 local attackRange = 15 -- Adjust range as needed
-
 local attributesList = {"Hunger", "Hygiene", "Stamina", "MaxStamina", "MaxHunger"}
 
 -- Nearby check
@@ -56,6 +52,25 @@ local function isNear(otherChar, range)
     if otherHRP then
         local distance = (HumanoidRootPart.Position - otherHRP.Position).Magnitude
         return distance <= range
+    end
+    return false
+end
+
+-- Exclusion Logic
+local excludedPlayers = {}
+local excludedTeams = {}
+
+local function shouldExclude(player)
+    if excludedPlayers[player.Name] then
+        return true
+    end
+    local team = player.Character and player.Character:GetAttribute("Team")
+    if team and excludedTeams[team] then
+        return true
+    end
+    local trueRank = player:GetAttribute("TrueRank")
+    if trueRank and trueRank >= 50 and excludedTeams["Staff"] then
+        return true
     end
     return false
 end
@@ -75,7 +90,6 @@ end)
 divineBlessingBtn.MouseButton1Click:Connect(function()
     isAttributeLoopEnabled = not isAttributeLoopEnabled
     setButtonText(divineBlessingBtn, isAttributeLoopEnabled)
-
     if not isAttributeLoopEnabled then
         local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
         for _, attr in pairs(attributesList) do
@@ -88,14 +102,12 @@ end)
 local function destroyInsanityProps()
     local insanityFolder = Workspace:FindFirstChild("Essentials") and Workspace.Essentials:FindFirstChild("Insanity")
     if not insanityFolder then return end
-
     for _, obj in ipairs(insanityFolder:GetDescendants()) do
         if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Decal") or obj:IsA("ImageLabel") or obj:IsA("TextLabel") then
             obj:Destroy()
         end
     end
 end
-
 
 -- Door Attack Button
 doorAttackBtn.MouseButton1Click:Connect(function()
@@ -113,7 +125,6 @@ end)
 hideInsanityPropsBtn.MouseButton1Click:Connect(function()
     isHideInsanityPropsEnabled = not isHideInsanityPropsEnabled
     setButtonText(hideInsanityPropsBtn, isHideInsanityPropsEnabled)
-
     if isHideInsanityPropsEnabled then
         spawn(destroyInsanityProps)
         hideInsanityPropsBtn.Text = "Done! Destroying this button now."
@@ -129,13 +140,11 @@ unloadGuiBtn.MouseButton1Click:Connect(function()
     isAttributeLoopEnabled = false
     isESPEnabled = false
     isHideInsanityPropsEnabled = false
-
     -- Reset button texts
     setButtonText(autoAttackBtn, false)
     setButtonText(divineBlessingBtn, false)
     setButtonText(showDirtyLinensBtn, false)
     setButtonText(hideInsanityPropsBtn, false)
-
     -- Destroy GUI
     local gui = PlayerGui:FindFirstChild(guiName)
     if gui then
@@ -155,9 +164,9 @@ task.spawn(function()
         if isAutoAttackEnabled then
             local targets = {}
             for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer then
+                if player ~= LocalPlayer and not shouldExclude(player) then
                     local character = player.Character
-                    if character and isNear(character, 5) then
+                    if character and isNear(character, attackRange) then
                         table.insert(targets, character)
                     end
                 end
@@ -194,11 +203,9 @@ task.spawn(function()
             for _, door in ipairs(doorsFolder:GetChildren()) do
                 local canBreak = door:GetAttribute("canBreak")
                 local currentHealth = door:GetAttribute("currentHealth")
-
                 -- Handle Model position via PrimaryPart
                 local hrpPos = HumanoidRootPart.Position
                 local doorPos = nil
-
                 if door:IsA("Model") and door.PrimaryPart then
                     local primaryPart = door:FindFirstChild(door.PrimaryPart.Name)
                     if primaryPart then
@@ -207,7 +214,6 @@ task.spawn(function()
                 elseif door:IsA("BasePart") then
                     doorPos = door.Position
                 end
-
                 -- Validate and collect valid targets
                 if canBreak == true and currentHealth and currentHealth > 0 and doorPos then
                     if (hrpPos - doorPos).Magnitude <= attackRange then
@@ -215,12 +221,10 @@ task.spawn(function()
                     end
                 end
             end
-
             if #targets > 0 then
                 attackEvent:FireServer("AttackPlayers", targets)
             end
         end
-
         task.wait(isDoorAttackEnabled and 0.2 or 0.1)
     end
 end)
@@ -237,7 +241,6 @@ task.spawn(function()
             for _, gui in ipairs(linenESPFolder:GetChildren()) do
                 gui:Destroy()
             end
-
             local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
             if root then
                 local beds = Workspace:WaitForChild("Essentials", 10):WaitForChild("Interactables", 10):WaitForChild("BedFolder", 10):GetChildren()
@@ -246,14 +249,12 @@ task.spawn(function()
                         local bedPart = bed.PrimaryPart or bed:FindFirstChildWhichIsA("BasePart")
                         if bedPart then
                             local distance = (bedPart.Position - root.Position).Magnitude
-
                             local adorn = Instance.new("BillboardGui")
                             adorn.Name = "ESP_" .. bed.Name
                             adorn.AlwaysOnTop = true
                             adorn.Size = UDim2.new(0, 200, 0, 50)
                             adorn.Adornee = bedPart
                             adorn.Parent = linenESPFolder
-
                             local textLabel = Instance.new("TextLabel")
                             textLabel.Size = UDim2.new(1, 0, 1, 0)
                             textLabel.BackgroundTransparency = 1
@@ -272,7 +273,6 @@ task.spawn(function()
                 gui:Destroy()
             end
         end
-
         task.wait(1)
     end
 end)
