@@ -57,7 +57,7 @@ local function addGlow(instance, color, size)
 end
 
 -- Prevent duplicate GUI creation
-local guiName = "LeoToolsGUI"
+local guiName = "LeoDPITools"
 if PlayerGui:FindFirstChild(guiName) then
     return {} -- Don't load again
 end
