@@ -2,7 +2,7 @@
 -- By leothesavior aka @pridescruelty
 -- https://www.youtube.com/@pridescruelty/
 
-local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/ui.lua"
+local uiUrl = "https://raw.githubusercontent.com/envyofblood/leostoolsfordpi/refs/heads/main/lib.lua"
 local uiModule = nil
 local guiName = "Pridesful"
 
