@@ -1,4 +1,4 @@
-
+-- V1.9
 -- By leothesavior aka @pridescruelty
 -- https://www.youtube.com/ @pridescruelty/
 
@@ -31,6 +31,8 @@ local excludeBlueTeamBtn = uiModule.excludeBlueTeamBtn
 local excludeGreenTeamBtn = uiModule.excludeGreenTeamBtn
 local excludePinkTeamBtn = uiModule.excludePinkTeamBtn
 local excludeStaffBtn = uiModule.excludeStaffBtn
+local discordBtn = uiModule.discordBtn
+local youtubeBtn = uiModule.youtubeBtn
 
 -- Services
 local Players = game:GetService("Players")
