@@ -22,7 +22,7 @@ local COLORS = {
 }
 
 -- Prevent duplicate GUI creation
-local guiName = "Pridesful"
+local guiName = "Seven Deadly Melons"
 if PlayerGui:FindFirstChild(guiName) then
     return {} -- Don't load again
 end
@@ -91,7 +91,7 @@ addCorners(titleBar, 12)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundTransparency = 1
-title.Text = "Pridesful"
+title.Text = "Seven Deadly Melons"
 title.TextColor3 = COLORS.text
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
@@ -120,7 +120,7 @@ local credits = Instance.new("TextLabel")
 credits.Size = UDim2.new(1, 0, 0, 20)
 credits.Position = UDim2.new(0, 0, 1, -20)
 credits.BackgroundTransparency = 1
-credits.Text = "by Leo"
+credits.Text = "By @me1ancholies aka @leothesavior <3"
 credits.TextColor3 = COLORS.subtext
 credits.Font = Enum.Font.Gotham
 credits.TextSize = 12
@@ -299,12 +299,25 @@ youtubeBtn = createButton(creditsSection, "Copy YouTube", UDim2.new(0, 10, 0, 60
 
 local exclusionSectionBtn = createButton(sidebar, "Exclusions", UDim2.new(0, 10, 0, 210))
 
-local nightVisionBtn = createButton(visualsSection, "Night-Vision : OFF", UDim2.new(0, 10, 0, 100))
+local nightVisionBtn = createButton(visualsSection, "Night-Vision", UDim2.new(0, 10, 0, 100))
 
 exclusionSectionBtn.MouseButton1Click:Connect(function()
     showSection(exclusionSection)
 end)
 
+
+local removeInsanitybtn = createButton(visualsSection, "Remove Insanity Blur", UDim2.new(0, 10, 0, 140))
+
+removeInsanitybtn.MouseButton1Click:Connect(function()
+    local insanityblur = game.Lighting:FindFirstChild("Insanity")
+    insanityblur.Saturation = 0
+    insanityblur.Contrast = 0 
+    insanityblur.Brightness = 0
+    insanityblur.TintColor = Color3.new(1,1,1)
+    removeInsanitybtn.Text = "Done!"
+    wait(1)
+    removeInsanitybtn.Text = "Remove Insanity Blur"
+end)
 
 local function setNightVision(on)
     nightVisionEnabled = on
@@ -470,6 +483,7 @@ staffBtn.MouseButton1Click:Connect(function()
     excludeStaff = not excludeStaff
     refreshExclusionList()
 end)
+
 
 -- Add Keybind Input
 local keybindContainer = Instance.new("Frame")
